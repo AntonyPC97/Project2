@@ -5,8 +5,8 @@ Create new Auction
 {%endblock%}
 
 {%block body%}
-<form method="POST">
-    {%csrf_token%}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
     <div class='container'>
         <div class='row border border-primary rounded'>
             <div class='col-6 border border-primary rounde auctionImg'>

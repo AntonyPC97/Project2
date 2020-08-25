@@ -6,14 +6,6 @@ from django.urls import reverse
 from django import forms
 from .models import User,Auction,Category
 
-class NewAuctionForm(forms.Form):
-    categories = Category.objects.all()
-    name = forms.CharField(max_length=50)
-    description = forms.CharField(widget=forms.Textarea)
-    image=forms.ImageField()
-    price = forms.FloatField(label='Initial Price')
-    category = forms.ModelChoiceField(queryset=categories)
-
 def index(request):
     return render(request, "auctions/index.html")
 
@@ -69,17 +61,25 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+class NewAuctionForm(forms.Form):
+    categories = Category.objects.all()
+    name = forms.CharField(max_length=50)
+    description = forms.CharField(widget=forms.Textarea)
+    image=forms.ImageField()
+    price = forms.FloatField(label='Initial Price')
+    category = forms.ModelChoiceField(queryset=categories)
+
 def newAuction(request):
     if(request.method=='POST'):
-        form = NewAuctionForm(request.POST)
+        form = NewAuctionForm(request.POST,request.FILES)
         if(form.is_valid()):
             name=form.cleaned_data['name']
             description=form.cleaned_data['description']
             price = float(form.cleaned_data['price'])
-            category = form.cleaned_data['category']
-            image = form.cleaned_data['image']
-            auction = Auction(name=name,description=description,price=price,
-                              category=Category.objects.get(pk=category),image=image)
+            category = Category.objects.get(pk=form.cleaned_data['category'].id)
+            image = request.FILES['image']
+            auction = Auction.objects.create(name=name,description=description,price=price,
+                              category=category,image=image,user = request.user,active=True)
             auction.save()
             return HttpResponseRedirect(reverse('index'))
         else:
