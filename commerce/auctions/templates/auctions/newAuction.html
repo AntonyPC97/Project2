@@ -1,0 +1,57 @@
+{% extends "auctions/layout.html" %}
+
+{%block title%}
+Create new Auction
+{%endblock%}
+
+{%block body%}
+<form method="POST">
+    {%csrf_token%}
+    <div class='container'>
+        <div class='row border border-primary rounded'>
+            <div class='col-6 border border-primary rounde auctionImg'>
+                {{form.image}}
+            </div>
+            <div class='col-6'>
+                <br>
+                <div class='row'>
+                    <div class='col-4'>
+                        <strong><label for="title">Name:</label></strong><br><br>
+                    </div>
+                    <div class='col-8'>
+                        {{form.name}}
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-4'>
+                        <strong><label for="title">Description:</label></strong><br><br>
+                    </div>
+                    <div class='col-8'>
+                        {{form.description}}
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-4'>
+                        <strong><label for="title">Price:</label></strong><br><br>
+                    </div>
+                    <div class='col-8'>
+                        {{form.price}}
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-4'>
+                        <strong><label for="title">Category:</label></strong><br><br>
+                    </div>
+                    <div class='col-8'>
+                        {{form.category}}
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <div class='row float-right'>
+            <input class="btn btn-primary" type="submit" value="Add Auction">
+        </div>
+    </div>
+</form>
+
+{%endblock%}
