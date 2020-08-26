@@ -6,3 +6,7 @@ body {
     border-collapse: collapse;
     padding: 10px;
 }
+
+.imageDetail{
+    max-width: 100%;
+}
