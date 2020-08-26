@@ -1,7 +1,30 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
 
-    TODO
+    {% if user.is_authenticated %}
+        <h2>Active Listings</h2>
+        <div class='container'>
+        {% for auction in auctions %}
+            <div class='row m-2 border-left-0 border-right-0 border border-dark'>
+                <div class='col-4'>
+                    <div class='text-center'>
+                        <img src="{{auction.image.url}}" class="rounded" alt="{{auction.name}}">
+                    </div>
+                </div>
+                <div class='col-8'>
+                    <strong>{{auction.name}}</strong><br><br>
+                    <p>{{auction.description}}</p> <br><br>
+                    <sup><strong>$</strong></sup>{{auction.price|floatformat:2}}
+                    <p class='text-right'>Created on {{auction.date_listed|date:'F d, Y'}}</p>
+                </div>
+            </div>
+        {% empty %}
+            You don't have any auctions yet. <a href='{% url "newAuction" %}'>Click here</a> to create one.
+        {% endfor %}    
+        </div>
+        
+    {% else %}
+
+    {% endif %}
 {% endblock %}
