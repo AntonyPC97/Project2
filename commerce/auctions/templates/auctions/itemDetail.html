@@ -15,7 +15,7 @@
             <div class='row'>
                 <strong>Description:</strong>
             </div>
-            <div class='row p-2'>
+            <div class='row p-2 text-justify'>
                 <p>{{item.description}}</p>
             </div>
             <div class='row'>
@@ -31,11 +31,29 @@
                 <p>{{item.user.username}} on {{item.date_listed|date:'F d, Y'}}</p>
             </div>
             <div class='row'>
-                <strong>Current Bid:</strong>
+                {{count}} bid(s) so far.   
+            </div>
+            <div class='row'>
+                <strong>Current Bid: </strong>             
             </div>
             <div class='row p-2'>
                 <p><sup>$</sup>{{item.price|floatformat:2}}</p>
             </div>
+            {% if user.is_authenticated and user.id != item.user.id %}
+            <form method="POST">
+                {%csrf_token%}
+                <div class='row'>
+                    <div class='col-6'>
+                        <input class = 'form-control border border-primary float-right' 
+                        name="bid" type="number" step=0.01 
+                        placeholder="Must be greater than $ {{item.price|floatformat:2}}">
+                    </div>
+                    <div class='col-6'>
+                        <input class='btn btn-primary float-left'type="submit" value="Place Bid">
+                    </div>
+                </div>
+            </form> 
+            {% endif %}
         </div>
     </div>
 </div>

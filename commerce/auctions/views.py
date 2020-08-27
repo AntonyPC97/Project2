@@ -105,17 +105,22 @@ def newListing(request):
         return render(request,'auctions/newListing.html',{'form':NewListingForm()})
 
 def itemDetail(request,item_name):
+    user = request.user
+    item = Listing.objects.get(name=item_name)
     if(request.method=='POST'):
-        listing = Listing.objects.get(name=item_name)
-        #check if it's already in his watchlist
-        try:
-            watchlist = Watchlist.objects.get(user=request.user,listing=listing)
-        except ObjectDoesNotExist:
-            watchlist = Watchlist.objects.create(user=request.user,listing=listing)
-            watchlist.save()
+        newbid = float(request.POST['bid'])
+        if (newbid<=item.price):
+            return render(request,'auctions/itemDetail.html',{'item':item,'count':bidCount})
+        else:
+            newbid = round(newbid,2)
+            bid = Bid.objects.create(user = user,listing=item,bid=newbid)
+            bid.save()
+            item.price = newbid
+            item.save()
     try:
+        bidCount = Bid.objects.filter(listing=item).count()
         item = Listing.objects.get(name=item_name)
-        return render(request,'auctions/itemDetail.html',{'item':item})
+        return render(request,'auctions/itemDetail.html',{'item':item,'count':bidCount})
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse('index'))
     
@@ -153,3 +158,5 @@ def removeWatchlist(request,item_id):
     watchlist = Watchlist.objects.get(user=user,listing=listing)
     watchlist.delete()
     return HttpResponseRedirect(reverse('listWatchlist'))
+
+
