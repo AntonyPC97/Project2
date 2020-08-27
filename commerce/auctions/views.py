@@ -8,19 +8,23 @@ from .models import User,Listing,Category,Bid,Comment,Watchlist
 from django.views.generic import DetailView
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.forms import ModelForm
 
-class ListingForm(ModelForm):
-    class Meta:
-        model = Listing
-        fields = '__all__'
 
 def index(request):
     #Get all listing 
+    user = request.user
     listings = Listing.objects.all()
-    return render(request, "auctions/index.html",{
-        'auctions':listings
-    })
+    if(user.id is not None):
+        watchlistItems = [x.listing for x in user.watchlist_set.all()] 
+        return render(request, "auctions/index.html",{
+            'listings':listings,
+            'watchlistItems':watchlistItems
+        })
+    else:
+        return render(request, "auctions/index.html",{
+            'listings':listings
+        })
+   
 
 def login_view(request):
     if request.method == "POST":
@@ -122,15 +126,30 @@ def listCategories(request):
 def itemByCategory(request,category):
     category = Category.objects.get(name=category)
     listings = category.listing_set.all()
-    return render(request,'auctions/index.html',{'auctions':listings})
+    return render(request,'auctions/index.html',{'listings':listings})
 
-@login_required
+@login_required(login_url='login')
 def listWatchlist(request):
-    try:
-        user = request.user
-        listings = [watchlist.listing for watchlist in user.watchlist_set.all()]
-        return render(request,'auctions/index.html',{
-            'auctions':listings,
-            'text':f'Watchlist for {user.username}'})
-    except ObjectDoesNotExist:
-        return HttpResponseRedirect(reverse('index'))
+    user = request.user
+    listings = [watchlist.listing for watchlist in user.watchlist_set.all()]
+    return render(request,'auctions/watchlist.html',{
+        'listings':listings})
+
+@login_required(login_url='login')
+def add_watchlist(request,item_id):
+    listings = Listing.objects.all()
+    #get current user
+    user = request.user
+    #get item to add to watchlist
+    listing = Listing.objects.get(pk=item_id)
+    #check if item is in Watchlist, if not, create it
+    watchlist,status = Watchlist.objects.get_or_create(user=user,listing=listing)    
+    return HttpResponseRedirect(reverse('index'))
+
+@login_required(login_url='login')
+def removeWatchlist(request,item_id):
+    user = request.user
+    listing = Listing.objects.get(pk=item_id)
+    watchlist = Watchlist.objects.get(user=user,listing=listing)
+    watchlist.delete()
+    return HttpResponseRedirect(reverse('listWatchlist'))

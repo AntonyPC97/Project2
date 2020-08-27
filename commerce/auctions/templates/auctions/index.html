@@ -1,29 +1,36 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    {%if text%}
-    <h2>{{text}}</h2>
-    {%else%}
     <h2>Active Listings</h2>
-    {%endif%}
     <div class='container'>
-    {% for auction in auctions %}
+    {% for listing in listings %}
         <div class='row m-2 border-left-0 border-right-0 border border-dark'>
             <div class='col-4'>
                 <div class='text-center p-4'>
-                    <img src="{{auction.image.url}}" class='img-fluid' alt="{{auction.name}}">
+                    <img src="{{listing.image.url}}" class='img-fluid' alt="{{listing.name}}">
                 </div>
             </div>
             <div class='col-8'>
                 <div class='row'>
                     <div class='col-9'>
-                        <a href="{% url 'itemDetail' item_name=auction.name %}" style="color:grey"><strong>{{auction.name}}</strong></a>
+                        <a href="{% url 'itemDetail' item_name=listing.name %}" style="color:grey"><strong>{{listing.name}}</strong></a>
+                    </div>
+                    <div class='col-3'>
+                        {% if user.is_authenticated and user.id != listing.user.id %}
+                            {% if listing in watchlistItems %}
+                            <a href="{% url 'listWatchlist'%}" class='btn btn-success btn-sm float-right mt-2'>Go to Watchlist</a>
+                            {% else %}
+                            <a href="{% url 'addToWatchlist' listing.id %}" class='btn btn-primary btn-sm float-right mt-2'>Add to Watchlist</a>
+                            {%endif%}                        
+                        {% elif user.is_authenticated and user.id == listing.user.id %}
+                        <a href="#" class='btn btn-primary btn-sm float-right mt-2'>Close Listing</a>
+                        {% endif %}
                     </div>
                 </div>
                 <br><br>
-                <p>{{auction.description}}</p> <br><br>
-                <strong>Current Price: </strong><sup>$</sup>{{auction.price|floatformat:2}}
-                <p class='text-right'>Created on {{auction.date_listed|date:'F d, Y'}}</p>
+                <p>{{listing.description}}</p> <br><br>
+                <strong>Current Price: </strong><sup>$</sup>{{listing.price|floatformat:2}}
+                <p class='text-right'>Created on {{listing.date_listed|date:'F d, Y'}}</p>
             </div>
         </div>
     {%empty%}

@@ -1,0 +1,42 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Wathlist for {{user.username}}</h2>
+<div class='container'>
+    {% for listing in listings %}
+        <div class='row m-2 border-left-0 border-right-0 border border-dark'>
+            <div class='col-4'>
+                <div class='text-center p-4'>
+                    <img src="{{listing.image.url}}" class='img-fluid' alt="{{listing.name}}">
+                </div>
+            </div>
+            <div class='col-8'>
+                <div class='row'>
+                    <div class='col-9'>
+                        <a href="{% url 'itemDetail' item_name=listing.name %}" style="color:grey"><strong>{{listing.name}}</strong></a>
+                    </div>
+                    <div class='col-3'>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'removeWatchlist' listing.id %}" class='btn btn-warning btn-sm float-right mt-2'>Remove</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <br><br>
+                <p>{{listing.description}}</p> <br><br>
+                <strong>Current Price: </strong><sup>$</sup>{{listing.price|floatformat:2}}
+                <p class='text-right'>Created on {{listing.date_listed|date:'F d, Y'}}</p>
+            </div>
+        </div>
+    {%empty%}
+    <div class='container'>
+        <div class='row text-center'>
+            <div class='col-12'>
+                <h2>Nothing here yet :(</h2>
+            </div>
+        </div>
+    </div>
+    {% endfor %}    
+    </div>
+
+
+{% endblock %}
