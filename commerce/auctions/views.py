@@ -104,25 +104,31 @@ def newListing(request):
     else:
         return render(request,'auctions/newListing.html',{'form':NewListingForm()})
 
-def itemDetail(request,item_name):
-    user = request.user
-    item = Listing.objects.get(name=item_name)
+def itemDetail(request,item_id):
+    item = Listing.objects.get(pk=item_id)
+    bidList = item.bid_set.order_by('bid')
+    lastBid = bidList.last()
+    if(bidList.exists()):
+        currBid=lastBid.bid
+    else:
+        currBid=item.price
+
     if(request.method=='POST'):
+        user = request.user
         newbid = float(request.POST['bid'])
-        if (newbid<=item.price):
-            return render(request,'auctions/itemDetail.html',{'item':item,'count':bidCount})
+        if (newbid<=currBid):
+            return render(request,'auctions/itemDetail.html',{'item':item,'count':len(bidList),'bid':currBid,'lastBid':lastBid})
         else:
-            newbid = round(newbid,2)
-            bid = Bid.objects.create(user = user,listing=item,bid=newbid)
+            currBid = round(newbid,2)
+            bid = Bid.objects.create(user = user,listing=item,bid=currBid)
             bid.save()
-            item.price = newbid
-            item.save()
-    try:
-        bidCount = Bid.objects.filter(listing=item).count()
-        item = Listing.objects.get(name=item_name)
-        return render(request,'auctions/itemDetail.html',{'item':item,'count':bidCount})
-    except ObjectDoesNotExist:
-        return HttpResponseRedirect(reverse('index'))
+            return render(request,'auctions/itemDetail.html',{'item':item,'count':len(bidList),'bid':currBid,'lastBid':lastBid})
+    else:
+        try:
+            item = Listing.objects.get(pk=item_id)
+            return render(request,'auctions/itemDetail.html',{'item':item,'count':len(bidList),'bid':currBid,'lastBid':lastBid})
+        except ObjectDoesNotExist:
+            return HttpResponseRedirect(reverse('index'))
     
 def listCategories(request):
     categories = Category.objects.all()
@@ -159,4 +165,13 @@ def removeWatchlist(request,item_id):
     watchlist.delete()
     return HttpResponseRedirect(reverse('listWatchlist'))
 
-
+@login_required(login_url='login')
+def closeListing(request,item_id):
+    item = Listing.objects.get(pk=item_id)
+    winner = item.bid_set.order_by('bid').last().user
+    bid = Bid.objects.get(user=winner,listing=item)
+    item.active =False
+    item.save()
+    bid.winner = True
+    bid.save()
+    return HttpResponseRedirect(reverse('itemDetail',args=[item_id]))
