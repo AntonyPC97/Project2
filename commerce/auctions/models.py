@@ -28,6 +28,7 @@ class Bid(models.Model):
     bid = models.FloatField()
     listing = models.ForeignKey(Listing,on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
+    winner = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Bid of {round(self.bid,2)} place by {self.user.username} on item {self.listing.id}'

@@ -13,7 +13,7 @@
             <div class='col-8'>
                 <div class='row'>
                     <div class='col-9'>
-                        <a href="{% url 'itemDetail' item_name=listing.name %}" style="color:grey"><strong>{{listing.name}}</strong></a>
+                        <a href="{% url 'itemDetail' item_id=listing.id %}" style="color:grey"><strong>{{listing.name}}</strong></a>
                     </div>
                     <div class='col-3'>
                         {% if user.is_authenticated and user.id != listing.user.id %}
@@ -22,14 +22,12 @@
                             {% else %}
                             <a href="{% url 'addToWatchlist' listing.id %}" class='btn btn-primary btn-sm float-right mt-2'>Add to Watchlist</a>
                             {%endif%}                        
-                        {% elif user.is_authenticated and user.id == listing.user.id %}
-                        <a href="#" class='btn btn-primary btn-sm float-right mt-2'>Close Listing</a>
                         {% endif %}
                     </div>
                 </div>
                 <br><br>
                 <p>{{listing.description}}</p> <br><br>
-                <strong>Current Price: </strong><sup>$</sup>{{listing.price|floatformat:2}}
+                <strong>Starting Price: </strong><sup>$</sup>{{listing.price|floatformat:2}}
                 <p class='text-right'>Created on {{listing.date_listed|date:'F d, Y'}}</p>
             </div>
         </div>

@@ -13,7 +13,7 @@
             <div class='col-8'>
                 <div class='row'>
                     <div class='col-9'>
-                        <a href="{% url 'itemDetail' item_name=listing.name %}" style="color:grey"><strong>{{listing.name}}</strong></a>
+                        <a href="{% url 'itemDetail' item_id=listing.id %}" style="color:grey"><strong>{{listing.name}}</strong></a>
                     </div>
                     <div class='col-3'>
                         {% if user.is_authenticated %}
