@@ -1,11 +1,13 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<div class='container'>
+<div class='container detalles p-2'>
     <div class='row'>
         <div class='col-12'>
-            {% if user.is_authenticated and user.id == item.user.id %}
+            {% if user.is_authenticated and user.id == item.user.id and count != 0 %}
             <a href="{% url 'closeListing' item.id %}" class='btn btn-primary float-right mt-2'>Close this Listing</a>
+            {% elif user.id == item.user.id and count == 0 %}
+            <a href="{% url 'deleteListing' item.id %}" class='btn btn-primary float-right mt-2'>Delete this Listing</a>
             {% endif %}
         </div>
     </div>
@@ -83,6 +85,47 @@
             {% endif %}
         </div>
     </div>
+</div>
+<br>
+<div class = 'container detalles'>
+    <div class='row'>
+        <div class='col-12'>
+            <h3>Comments...</h3>
+        </div> 
+    </div>
+    <form method="POST">
+        {% csrf_token %}
+        <div class='row'>
+            <div class='col-2'></div>
+            <div class="col-8 form-group">
+                <textarea class="form-control" name='comment' rows="5"></textarea>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-12 '>
+                <input class = 'btn btn-primary float-right' type="submit" value="Add a Comment">
+            </div>
+        </div>
+    </form>
+    {% for comment in item.comments.all|dictsortreversed:"date_comment" %}
+    <div class='row'>
+        <div class='col-2'></div>
+        <div class='col-8 comment'>
+            <strong>{{comment.user.username}} on {{comment.date_comment|date:'F d, Y'}}</strong>
+            <br><br>
+            <p>{{comment.comment}}</p><br>
+            <p><small class = 'text-right'>{{comment.date_comment|date:'h:i A'}}</small></p>
+        </div>
+    </div>
+    <br>
+    {%empty%}
+    <div class='row'>
+        <div class='col-2'></div>
+        <div class='col-8 comment'>
+            <h5>No comments yet.</h5>
+        </div>
+    </div>
+    {%endfor%}
 </div>
 
 {% endblock %}

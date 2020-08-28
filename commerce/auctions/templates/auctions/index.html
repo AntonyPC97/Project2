@@ -4,7 +4,7 @@
     <h2>Active Listings</h2>
     <div class='container'>
     {% for listing in listings %}
-        <div class='row m-2 border-left-0 border-right-0 border border-dark'>
+        <div class='row m-2 border border-dark detalles'>
             <div class='col-4'>
                 <div class='text-center p-4'>
                     <img src="{{listing.image.url}}" class='img-fluid' alt="{{listing.name}}">
@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <br><br>
-                <p>{{listing.description}}</p> <br><br>
+                <p class='text-justify'>{{listing.description}}</p> <br><br>
                 <strong>Starting Price: </strong><sup>$</sup>{{listing.price|floatformat:2}}
                 <p class='text-right'>Created on {{listing.date_listed|date:'F d, Y'}}</p>
             </div>

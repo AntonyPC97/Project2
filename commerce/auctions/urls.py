@@ -16,5 +16,6 @@ urlpatterns = [
     path('watchlist',views.listWatchlist,name='listWatchlist'),
     path('addToWatchlist/<int:item_id>',views.add_watchlist,name='addToWatchlist'),
     path('removeWatchlist/<int:item_id>',views.removeWatchlist,name='removeWatchlist'),
-    path('closeListing/<int:item_id>',views.closeListing,name='closeListing')
+    path('closeListing/<int:item_id>',views.closeListing,name='closeListing'),
+    path('deleteListing/<int:item_id>',views.deleteListing,name='deleteListing')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {%block title%}
-Create new Auction
+Create new Listing
 {%endblock%}
 
 {%block body%}
@@ -9,10 +9,10 @@ Create new Auction
     {% csrf_token %}
     <div class='container'>
         <div class='row border border-primary rounded'>
-            <div class='col-6 border border-primary rounde auctionImg'>
+            <div class='col-4 border border-primary rounde auctionImg'>
                 {{form.image}}
             </div>
-            <div class='col-6'>
+            <div class='col-8'>
                 <br>
                 <div class='row'>
                     <div class='col-4'>

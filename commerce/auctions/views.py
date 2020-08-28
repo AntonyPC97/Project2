@@ -85,7 +85,7 @@ class NewListingForm(forms.Form):
     price = forms.FloatField(label='Initial Price')
     category = forms.ModelChoiceField(queryset=categories)
 
-
+@login_required(login_url='login')
 def newListing(request):
     if(request.method=='POST'):
         form = NewListingForm(request.POST,request.FILES)
@@ -104,25 +104,32 @@ def newListing(request):
     else:
         return render(request,'auctions/newListing.html',{'form':NewListingForm()})
 
+@login_required(login_url='login')
 def itemDetail(request,item_id):
     item = Listing.objects.get(pk=item_id)
     bidList = item.bid_set.order_by('bid')
     lastBid = bidList.last()
+    user = request.user
     if(bidList.exists()):
         currBid=lastBid.bid
     else:
         currBid=item.price
 
     if(request.method=='POST'):
-        user = request.user
-        newbid = float(request.POST['bid'])
-        if (newbid<=currBid):
-            return render(request,'auctions/itemDetail.html',{'item':item,'count':len(bidList),'bid':currBid,'lastBid':lastBid})
+        if(request.POST.get('bid')):
+            newbid = float(request.POST['bid'])
+            if (newbid<=currBid):
+                return render(request,'auctions/itemDetail.html',{'item':item,'count':len(bidList),'bid':currBid,'lastBid':lastBid})
+            else:
+                currBid = round(newbid,2)
+                bid = Bid.objects.create(user = user,listing=item,bid=currBid)
+                bid.save()
+                return render(request,'auctions/itemDetail.html',{'item':item,'count':len(bidList),'bid':currBid,'lastBid':lastBid})
         else:
-            currBid = round(newbid,2)
-            bid = Bid.objects.create(user = user,listing=item,bid=currBid)
-            bid.save()
-            return render(request,'auctions/itemDetail.html',{'item':item,'count':len(bidList),'bid':currBid,'lastBid':lastBid})
+            text = request.POST.get('comment')
+            comment = Comment.objects.create(comment=text,user=user,listing=item)
+            comment.save()
+            return HttpResponseRedirect(reverse('itemDetail', args=[item.id]))
     else:
         try:
             item = Listing.objects.get(pk=item_id)
@@ -175,3 +182,10 @@ def closeListing(request,item_id):
     bid.winner = True
     bid.save()
     return HttpResponseRedirect(reverse('itemDetail',args=[item_id]))
+
+@login_required(login_url='login')
+def deleteListing(request,item_id):
+    item = Listing.objects.get(pk=item_id)
+    item.active = False
+    item.save()
+    return HttpResponseRedirect(reverse('index'))

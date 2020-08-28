@@ -1,4 +1,11 @@
 body {
-    padding: 30px;
-    background-color: blue;
+    padding: 20px;
+    background-color: lightgray;
 }
+ .detalles{
+     background-color: whitesmoke;
+ }
+
+ .comment{
+     background-color: white;
+ }
